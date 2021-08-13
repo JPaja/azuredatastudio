@@ -22,6 +22,9 @@ export enum ConnectionOptionSpecialType {
 	serverName = 'serverName',
 	databaseName = 'databaseName',
 	authType = 'authType',
+	clientCertificate = 'clientCertificate',
+	clientKey = 'clientKey',
+	clientKeyPassword = 'clientKeyPassword',
 	userName = 'userName',
 	password = 'password',
 	appName = 'appName'
@@ -675,6 +678,30 @@ export class ConnectionProfile {
 
 	set userName(value: string) {
 		this.options['userName'] = value;
+	}
+
+	get clientCertificate(): string {
+		return this.options['clientCertificate'];
+	}
+
+	set clientCertificate(value: string) {
+		this.options['clientCertificate'] = value;
+	}
+
+	get clientKey(): string {
+		return this.options['clientKey'];
+	}
+
+	set clientKey(value: string) {
+		this.options['clientKey'] = value;
+	}
+
+	get clientKeyPassword(): string {
+		return this.options['clientKeyPassword'];
+	}
+
+	set clientKeyPassword(value: string) {
+		this.options['clientKeyPassword'] = value;
 	}
 
 	get password(): string {

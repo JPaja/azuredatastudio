@@ -364,7 +364,11 @@ declare module 'azdata' {
 		databaseName?: string | undefined;
 		userName: string;
 		password: string;
+		clientCertificate: string;
+		clientKey: string;
+		clientKeyCertificate: string;
 		authenticationType: string;
+		sqlAuthenticationType: string;
 		savePassword: boolean;
 		groupFullName?: string | undefined;
 		groupId?: string | undefined;

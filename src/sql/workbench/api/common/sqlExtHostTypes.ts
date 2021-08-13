@@ -22,6 +22,7 @@ export enum ConnectionOptionSpecialType {
 	serverName = 'serverName',
 	databaseName = 'databaseName',
 	authType = 'authType',
+	sqlAuthType = 'sqlAuthType',
 	clientCertificate = 'clientCertificate',
 	clientKey = 'clientKey',
 	clientKeyPassword = 'clientKeyPassword',

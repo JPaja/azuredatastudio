@@ -38,5 +38,9 @@ export enum ConnectionOptionSpecialType {
 	authType = 'authType',
 	userName = 'userName',
 	password = 'password',
-	appName = 'appName'
+	appName = 'appName',
+	sqlAuthType = 'sqlAuthType',
+	clientCertificate = 'clientCertificate',
+	clientKey = 'clientKey',
+	clientKeyPassword = 'clientKeyPassword',
 }

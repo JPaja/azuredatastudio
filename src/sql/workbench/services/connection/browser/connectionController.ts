@@ -56,6 +56,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
+	//TODO: Add case with certificates
 	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;

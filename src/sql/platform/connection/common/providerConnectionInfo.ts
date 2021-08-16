@@ -119,6 +119,18 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.userName)!;
 	}
 
+	public get clientCertificate(): string {
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.clientCertificate)!;
+	}
+
+	public get clientKey(): string {
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.clientKey)!;
+	}
+
+	public get clientKeyPassword(): string {
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.clientKeyPassword)!;
+	}
+
 	public get password(): string {
 		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.password)!;
 	}
@@ -141,6 +153,16 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public set userName(value: string) {
 		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.userName, value);
+	}
+
+	public set clientCertificate(value: string) {
+		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.clientCertificate, value);
+	}
+	public set clientKey(value: string) {
+		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.clientKey, value);
+	}
+	public set clientKeyPassword(value: string) {
+		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.clientKeyPassword, value);
 	}
 
 	public set password(value: string) {

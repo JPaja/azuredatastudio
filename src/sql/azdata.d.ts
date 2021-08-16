@@ -103,6 +103,10 @@ declare module 'azdata' {
 			databaseName: string;
 			userName: string;
 			password: string;
+			clientCertificate: string;
+			clientKey: string;
+			clientKeyPassword: string;
+			sqlAuthenticationType: string;
 			authenticationType: string;
 			savePassword: boolean;
 			groupFullName: string;
@@ -364,11 +368,12 @@ declare module 'azdata' {
 		databaseName?: string | undefined;
 		userName: string;
 		password: string;
-		clientCertificate: string;
-		clientKey: string;
-		clientKeyCertificate: string;
+		clientCertificate?: string;
+		clientKey?: string;
+		//clientKeyCertificate: string;
+		clientKeyPassword?: string;
 		authenticationType: string;
-		sqlAuthenticationType: string;
+		sqlAuthenticationType?: string;
 		savePassword: boolean;
 		groupFullName?: string | undefined;
 		groupId?: string | undefined;

@@ -721,6 +721,15 @@ export class ConnectionProfile {
 		this.options['authenticationType'] = value;
 	}
 
+	get sqlAuthenticationType(): string {
+		return this.options['sqlAuthenticationType'];
+	}
+
+	set sqlAuthenticationType(value: string) {
+		this.options['sqlAuthenticationType'] = value;
+	}
+
+
 	get savePassword(): boolean {
 		return this.options['savePassword'];
 	}

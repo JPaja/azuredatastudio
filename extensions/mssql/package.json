@@ -806,6 +806,35 @@
           "isArray": false
         },
         {
+          "specialValueType": "sqlAuthType",
+          "isIdentity": true,
+          "name": "sqlAuthenticationType",
+          "displayName": "SQL Auth Type",
+          "description": "SQL Auth Type",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "Sql Auth Type",
+          "defaultValueOsOverrides": [
+            {
+              "os": "Windows",
+              "defaultValueOverride": "Integrated"
+            }
+          ],
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "User/Pass",
+              "name": "UserPass"
+            },
+            {
+              "displayName": "Certificate",
+              "name": "Certificate"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
           "specialValueType": "userName",
           "isIdentity": true,
           "name": "user",

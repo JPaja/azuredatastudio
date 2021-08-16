@@ -849,6 +849,48 @@
           "isArray": false
         },
         {
+          "specialValueType": "clientCertificate",
+          "isIdentity": true,
+          "name": "clientCertificate",
+          "displayName": "Login certificate",
+          "description": "Certificate used for authentification",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "clientKey",
+          "isIdentity": true,
+          "name": "clientKey",
+          "displayName": "Certificate private key",
+          "description": "Private key of login certificate",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "clientKeyPassword",
+          "isIdentity": true,
+          "name": "clientKeyPassword",
+          "displayName": "Private key password",
+          "description": "Password for certificate private key",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
           "specialValueType": "password",
           "isIdentity": true,
           "name": "password",

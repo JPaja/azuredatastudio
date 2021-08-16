@@ -586,6 +586,10 @@ declare module 'azdata' {
 		serverName = 'serverName',
 		databaseName = 'databaseName',
 		authType = 'authType',
+		sqlAuthType = 'sqlAuthType',
+		clientCertificate = 'clientCertificate',
+		clientKey = 'clientKey',
+		clientKeyPassword = 'clientKeyPassword',
 		userName = 'userName',
 		password = 'password',
 		appName = 'appName'

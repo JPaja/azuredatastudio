@@ -139,6 +139,10 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.authType)!;
 	}
 
+	public get sqlAuthenticationType(): string {
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.sqlAuthType)!;
+	}
+
 	public set connectionName(value: string) {
 		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.connectionName, value);
 	}
@@ -171,6 +175,10 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public set authenticationType(value: string) {
 		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.authType, value);
+	}
+
+	public set sqlAuthenticationType(value: string) {
+		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.sqlAuthType, value);
 	}
 
 	public getOptionValue(name: string): any {

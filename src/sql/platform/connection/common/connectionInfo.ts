@@ -37,8 +37,8 @@ export function fixupConnectionCredentials(connCreds: interfaces.IConnectionProf
 		connCreds.clientKey = '';
 	}
 
-	if (!connCreds.clientKeyCertificate) {
-		connCreds.clientKeyCertificate = '';
+	if (!connCreds.clientKeyPassword) {
+		connCreds.clientKeyPassword = '';
 	}
 
 	return connCreds;

@@ -282,24 +282,24 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 
 		//ClientCertificate:
-		const clientCertificateDisplayName = 'Client Certificate';
-		let clientCertificate = DialogHelper.appendRow(this._tableContainer, clientCertificateDisplayName, 'connection-label', 'connection-input', 'username-row');
+		let clientCertificateOption = this._optionsMaps[ConnectionOptionSpecialType.clientCertificate];
+		let clientCertificate = DialogHelper.appendRow(this._tableContainer, clientCertificateOption.DisplayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientCertificateInputBox = new InputBox(clientCertificate, this._contextViewService, {
-			ariaLabel: clientCertificateDisplayName
+			ariaLabel: clientCertificateOption.DisplayName
 		});
 		//ClientKey
 		//TODO: Add validation for correct path
-		const clientKeyDisplayName = 'Client Key';
-		let clientKey = DialogHelper.appendRow(this._tableContainer, clientKeyDisplayName, 'connection-label', 'connection-input', 'username-row');
+		let clientKeyOption = this._optionsMaps[ConnectionOptionSpecialType.clientKey];
+		let clientKey = DialogHelper.appendRow(this._tableContainer, clientKeyOption.DisplayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientKeyInputBox = new InputBox(clientKey, this._contextViewService, {
-			ariaLabel: clientKeyDisplayName
+			ariaLabel: clientKeyOption.DisplayName
 		});
 
 		//ClientKeyPassword
-		const clientKeyPasswordDisplayName = 'Client Key Password';
-		let clientKeyPassword = DialogHelper.appendRow(this._tableContainer, clientKeyPasswordDisplayName, 'connection-label', 'connection-input', 'password-row');
+		let clientKeyPasswordOption = this._optionsMaps[ConnectionOptionSpecialType.clientKeyPassword];
+		let clientKeyPassword = DialogHelper.appendRow(this._tableContainer, clientKeyPasswordOption.DisplayName, 'connection-label', 'connection-input', 'password-row');
 		this._clientKeyPasswordInputBox = new InputBox(clientKeyPassword, this._contextViewService, {
-			ariaLabel: clientKeyPasswordDisplayName
+			ariaLabel: clientKeyPasswordOption.DisplayName
 		});
 
 

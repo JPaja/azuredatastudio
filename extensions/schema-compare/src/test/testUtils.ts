@@ -38,6 +38,10 @@ export const mockConnectionProfile: azdata.connection.ConnectionProfile = {
 	groupFullName: 'My groupName',
 	groupId: 'My GroupId',
 	saveProfile: true,
+	clientCertificate: '',
+	clientKey: '',
+	clientKeyPassword: '',
+	sqlAuthenticationType: '',
 	options: {
 		server: 'My Server',
 		database: 'My Database',
@@ -60,6 +64,10 @@ export const mockConnectionProfile2: azdata.connection.ConnectionProfile = {
 	groupFullName: 'My groupName2',
 	groupId: 'My GroupId2',
 	saveProfile: true,
+	clientCertificate: '',
+	clientKey: '',
+	clientKeyPassword: '',
+	sqlAuthenticationType: '',
 	options: {
 		server: 'My Server2',
 		database: 'My Database2',

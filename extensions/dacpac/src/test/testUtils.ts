@@ -18,5 +18,9 @@ export const mockConnectionProfile: azdata.connection.ConnectionProfile = {
 	groupFullName: 'My groupName',
 	groupId: 'My GroupId',
 	saveProfile: true,
+	clientCertificate: '',
+	clientKey: '',
+	clientKeyPassword: '',
+	sqlAuthenticationType: '',
 	options: {}
 };

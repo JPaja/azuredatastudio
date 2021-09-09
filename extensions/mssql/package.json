@@ -794,6 +794,10 @@
               "name": "SqlLogin"
             },
             {
+              "displayName": "SQL Certificate",
+              "name": "SqlCertificate"
+            },
+            {
               "displayName": "%mssql.connectionOptions.authType.categoryValues.integrated%",
               "name": "Integrated"
             },

@@ -39,6 +39,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
+	SqlCertificate = 'SqlCertificate',
 	Integrated = 'Integrated',
 	AzureMFA = 'AzureMFA',
 	AzureMFAAndUser = 'AzureMFAAndUser',
@@ -56,9 +57,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
 	private _password: string;
-	private _clientCertificate: string;
-	private _clientKey: string;
-	private _clientKeyPassword: string;
 	private _rememberPasswordCheckBox: Checkbox;
 	private _azureAccountDropdown: SelectBox;
 	private _azureTenantDropdown: SelectBox;
@@ -78,7 +76,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
-	protected _sqlAuthTypeSelectBox: SelectBox;
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
@@ -86,7 +83,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.SqlCertificate, AuthenticationType.dSTSAuth, AuthenticationType.None];
+
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -140,14 +138,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
-
-		let sqlAuthTypeOption = this._optionsMaps[ConnectionOptionSpecialType.sqlAuthType];
-		if (sqlAuthTypeOption) {
-			let sqlAuthTypeDefault = this.getAuthTypeDefault(sqlAuthTypeOption, OS);
-			let sqlAuthTypeDefaultDisplay = this.getSqlAuthTypeDisplayName(sqlAuthTypeDefault);
-			this._sqlAuthTypeSelectBox = new SelectBox(sqlAuthTypeOption.categoryValues.map(c => c.displayName), sqlAuthTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
-		}
-
 
 		this._providerName = providerName;
 	}
@@ -258,23 +248,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 
-	protected addSqlLoginAuthenticationTypeOption(): void {
-
-		if (this._optionsMaps[ConnectionOptionSpecialType.sqlAuthType]) {
-			let sqlAuthType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.sqlAuthType].displayName, 'connection-label', 'connection-input');
-			DialogHelper.appendInputSelectBox(sqlAuthType, this._sqlAuthTypeSelectBox);
-		}
-
-		// this._sqlAuthTypeSelectBox = new SelectBox(['Username/Password','Digital Certificate'], 'Digital Certificate', this._contextViewService, undefined, { ariaLabel: 'Sql authentification type' });
-		// let authType = DialogHelper.appendRow(this._tableContainer, 'Sql authentification type' , 'connection-label', 'connection-input');
-		// DialogHelper.appendInputSelectBox(authType, this._sqlAuthTypeSelectBox);
-	}
-
 	protected addLoginOptions(): void {
 
 		let self = this;
-
-		this.addSqlLoginAuthenticationTypeOption();
 		//Option User-Pass or Certificate
 
 		//Certificate:
@@ -283,26 +259,33 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		//ClientCertificate:
 		let clientCertificateOption = this._optionsMaps[ConnectionOptionSpecialType.clientCertificate];
-		let clientCertificate = DialogHelper.appendRow(this._tableContainer, clientCertificateOption.DisplayName, 'connection-label', 'connection-input', 'username-row');
+		let clientCertificate = DialogHelper.appendRow(this._tableContainer, clientCertificateOption.displayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientCertificateInputBox = new InputBox(clientCertificate, this._contextViewService, {
-			ariaLabel: clientCertificateOption.DisplayName
+			validationOptions: {
+				validation: (value: string) => self.validateClientCertificate(value, clientCertificateOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
+			},
+			ariaLabel: clientCertificateOption.displayName
 		});
+
 		//ClientKey
 		//TODO: Add validation for correct path
 		let clientKeyOption = this._optionsMaps[ConnectionOptionSpecialType.clientKey];
-		let clientKey = DialogHelper.appendRow(this._tableContainer, clientKeyOption.DisplayName, 'connection-label', 'connection-input', 'username-row');
+		let clientKey = DialogHelper.appendRow(this._tableContainer, clientKeyOption.displayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientKeyInputBox = new InputBox(clientKey, this._contextViewService, {
-			ariaLabel: clientKeyOption.DisplayName
+			validationOptions: {
+				validation: (value: string) => self.validateClientKey(value, clientKeyOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
+			},
+			ariaLabel: clientKeyOption.displayName
 		});
 
 		//ClientKeyPassword
 		let clientKeyPasswordOption = this._optionsMaps[ConnectionOptionSpecialType.clientKeyPassword];
-		let clientKeyPassword = DialogHelper.appendRow(this._tableContainer, clientKeyPasswordOption.DisplayName, 'connection-label', 'connection-input', 'password-row');
+		let clientKeyPassword = DialogHelper.appendRow(this._tableContainer, clientKeyPasswordOption.displayName, 'connection-label', 'connection-input', 'password-row');
 		this._clientKeyPasswordInputBox = new InputBox(clientKeyPassword, this._contextViewService, {
-			ariaLabel: clientKeyPasswordOption.DisplayName
+			ariaLabel: clientKeyPasswordOption.displayName
 		});
-
-
+		this._clientKeyPasswordInputBox.inputElement.type = 'password';
+		this._password = '';
 
 		//User-Pass:
 
@@ -385,6 +368,37 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (!value && isOptionRequired) {
 				return true;
 			}
+
+		}
+		return false;
+	}
+
+	private validateClientCertificate(value: string, isOptionRequired: boolean): boolean {
+		let currentAuthType = this._authTypeSelectBox ? this.getMatchingAuthType(this._authTypeSelectBox.value) : undefined;
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlCertificate) {
+			if (!value && isOptionRequired) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private validateClientKey(value: string, isOptionRequired: boolean): boolean {
+		let currentAuthType = this._authTypeSelectBox ? this.getMatchingAuthType(this._authTypeSelectBox.value) : undefined;
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlCertificate) {
+			if (!value && isOptionRequired) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private validateClientKeyPassword(value: string, isOptionRequired: boolean): boolean {
+		let currentAuthType = this._authTypeSelectBox ? this.getMatchingAuthType(this._authTypeSelectBox.value) : undefined;
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlCertificate) {
+			if (!value && isOptionRequired) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -423,7 +437,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(attachButtonStyler(this._advancedButton, this._themeService));
 		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-		this._register(styler.attachSelectBoxStyler(this._sqlAuthTypeSelectBox, this._themeService));
 		if (this._serverGroupSelectBox) {
 			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
@@ -537,9 +550,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._clientKeyPasswordInputBox.disable();
 			this._clientKeyPasswordInputBox.hideMessage();
 			this._clientKeyPasswordInputBox.value = '';
-			this._clientCertificate = '';
-			this._clientKey = '';
-			this._clientKeyPassword = '';
 
 			this._userNameInputBox.enable();
 			this._passwordInputBox.disable();
@@ -551,6 +561,24 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._rememberPasswordCheckBox.checked = false;
 			this._rememberPasswordCheckBox.enabled = false;
 		} else if (currentAuthType !== AuthenticationType.SqlLogin) {
+			this._userNameInputBox.disable();
+			this._passwordInputBox.disable();
+			this._userNameInputBox.hideMessage();
+			this._passwordInputBox.hideMessage();
+			this._userNameInputBox.value = '';
+			this._passwordInputBox.value = '';
+			this._password = '';
+			this._rememberPasswordCheckBox.checked = false;
+			this._rememberPasswordCheckBox.enabled = false;
+		}
+		else {
+			this._userNameInputBox.enable();
+			this._passwordInputBox.enable();
+			this._rememberPasswordCheckBox.enabled = true;
+		}
+
+
+		if (currentAuthType !== AuthenticationType.SqlCertificate) {
 
 			this._clientCertificateInputBox.disable();
 			this._clientCertificateInputBox.hideMessage();
@@ -561,25 +589,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._clientKeyPasswordInputBox.disable();
 			this._clientKeyPasswordInputBox.hideMessage();
 			this._clientKeyPasswordInputBox.value = '';
-			this._clientCertificate = '';
-			this._clientKey = '';
-			this._clientKeyPassword = '';
-
-
-			this._userNameInputBox.disable();
-			this._passwordInputBox.disable();
-			this._userNameInputBox.hideMessage();
-			this._passwordInputBox.hideMessage();
-			this._userNameInputBox.value = '';
-			this._passwordInputBox.value = '';
-			this._password = '';
-
-			this._rememberPasswordCheckBox.checked = false;
-			this._rememberPasswordCheckBox.enabled = false;
 		} else {
-			this._userNameInputBox.enable();
-			this._passwordInputBox.enable();
-			this._rememberPasswordCheckBox.enabled = true;
+			this._clientCertificateInputBox.enable();
+			this._clientKeyInputBox.enable();
+			this._clientKeyPasswordInputBox.enable();
 		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
@@ -773,6 +786,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
+		this._clientCertificateInputBox.hideMessage();
 	}
 
 	private getModelValue(value: string): string {
@@ -785,6 +799,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
+			this._clientCertificateInputBox.value = this.getModelValue(connectionInfo.clientCertificate);
+			this._clientKeyInputBox.value = this.getModelValue(connectionInfo.clientKey);
+			this._clientKeyPasswordInputBox.value = this.getModelValue(connectionInfo.clientKeyPassword);
 			this._password = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
@@ -877,33 +894,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		return authTypeName;
 	}
 
-	protected getSqlAuthTypeDisplayName(authTypeName: string) {
-		let displayName: string;
-		let authTypeOption: azdata.ConnectionOption = this._optionsMaps[ConnectionOptionSpecialType.sqlAuthType];
-
-		if (authTypeOption) {
-			authTypeOption.categoryValues.forEach(c => {
-				if (c.name === authTypeName) {
-					displayName = c.displayName;
-				}
-			});
-		}
-		return displayName;
-	}
-
-	private getSqlAuthTypeName(authTypeDisplayName: string) {
-		//TODO: Fix
-		let authTypeName: string;
-		let authTypeOption: azdata.ConnectionOption = this._optionsMaps[ConnectionOptionSpecialType.sqlAuthType];
-		authTypeOption.categoryValues.forEach(c => {
-			if (c.displayName === authTypeDisplayName) {
-				authTypeName = c.name;
-			}
-		});
-		return authTypeName;
-	}
-
-
 	public handleOnConnecting(): void {
 		this._focusedBeforeHandleOnConnection = <HTMLElement>document.activeElement;
 		this._advancedButton.enabled = false;
@@ -943,6 +933,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+		}
+		else if (!currentAuthType || currentAuthType === AuthenticationType.SqlCertificate) {
+			this._clientCertificateInputBox.enable();
+			this._clientKeyInputBox.enable();
+			this._clientKeyPasswordInputBox.enable();
 		} else if (currentAuthType === AuthenticationType.AzureMFAAndUser) {
 			this._userNameInputBox.enable();
 		}
@@ -991,11 +986,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public get authenticationType(): string {
+		//return "SqlCertificate"
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
-	}
-
-	public get sqlAuthenticationType(): string {
-		return this._sqlAuthTypeSelectBox ? this.getSqlAuthTypeName(this._sqlAuthTypeSelectBox.value) : undefined;
 	}
 
 	public get authToken(): string | undefined {
@@ -1046,6 +1038,25 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._passwordInputBox.focus();
 			isFocused = true;
 		}
+
+		const isClientCertValid = this._clientCertificateInputBox.validate() === undefined;
+		if (!isClientCertValid && !isFocused) {
+			this._clientCertificateInputBox.focus();
+			isFocused = true;
+		}
+
+		const isClientKeyValid = this._clientKeyInputBox.validate() === undefined;
+		if (!isClientKeyValid && !isFocused) {
+			this._clientKeyInputBox.focus();
+			isFocused = true;
+		}
+
+		const isClientKeyPasswordValid = this._clientKeyPasswordInputBox.validate() === undefined;
+		if (!isClientKeyPasswordValid && !isFocused) {
+			this._clientKeyPasswordInputBox.focus();
+			isFocused = true;
+		}
+
 		const isAzureAccountValid = this.validateAzureAccountSelection();
 		if (!isAzureAccountValid && !isFocused) {
 			this._azureAccountDropdown.focus();
@@ -1065,10 +1076,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			model.savePassword = this._rememberPasswordCheckBox.checked;
 			model.connectionName = this.connectionName;
 			model.databaseName = this.databaseName;
-			model.sqlAuthenticationType = this.sqlAuthenticationType;
 			model.clientCertificate = this.clientCertificate;
 			model.clientKey = this.clientKey;
-			model.clientKeyPassword = model.clientKeyPassword;
+			model.clientKeyPassword = this.clientKeyPassword;
 			if (this._serverGroupSelectBox) {
 				if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
 					model.groupFullName = '';

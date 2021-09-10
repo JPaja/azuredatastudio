@@ -794,7 +794,7 @@
               "name": "SqlLogin"
             },
             {
-              "displayName": "SQL Certificate",
+              "displayName": "Certificate Authentication",
               "name": "SqlCertificate"
             },
             {
@@ -857,7 +857,7 @@
           "isIdentity": true,
           "name": "clientCertificate",
           "displayName": "Login certificate",
-          "description": "Certificate used for authentification",
+          "description": "Certificate used for authentication",
           "groupName": "Security",
           "valueType": "string",
           "defaultValue": null,
@@ -877,14 +877,14 @@
           "defaultValue": null,
           "objectType": null,
           "categoryValues": null,
-          "isRequired": true,
+          "isRequired": false,
           "isArray": false
         },
         {
           "specialValueType": "clientKeyPassword",
           "isIdentity": true,
           "name": "clientKeyPassword",
-          "displayName": "Private key password",
+          "displayName": "Certificate private key password",
           "description": "Password for certificate private key",
           "groupName": "Security",
           "valueType": "string",

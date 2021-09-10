@@ -262,7 +262,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let clientCertificate = DialogHelper.appendRow(this._tableContainer, clientCertificateOption.displayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientCertificateInputBox = new InputBox(clientCertificate, this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateClientCertificate(value, clientCertificateOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
+				validation: (value: string) => self.validateClientCertificate(value, clientCertificateOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", clientCertificateOption.displayName) }) : null
 			},
 			ariaLabel: clientCertificateOption.displayName
 		});
@@ -273,7 +273,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let clientKey = DialogHelper.appendRow(this._tableContainer, clientKeyOption.displayName, 'connection-label', 'connection-input', 'username-row');
 		this._clientKeyInputBox = new InputBox(clientKey, this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateClientKey(value, clientKeyOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
+				validation: (value: string) => self.validateClientKey(value, clientKeyOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", clientKeyOption.displayName) }) : null
 			},
 			ariaLabel: clientKeyOption.displayName
 		});
